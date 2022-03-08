@@ -1,3 +1,9 @@
+/*
+THIS CODE WAS MY OWN WORK, IT WAS WRITTEN WITHOUT CONSULTING
+CODE WRITTEN BY OTHER STUDENTS OR COPIED FROM ONLINE RESOURCES.
+Chris Yang
+*/
+
 /*  This class represents a Playlist of podcast episodes, where each
 /*  episode is implemented as an object of type Episode. A user navigating
 /*  a Playlist should be able to move between songs using Next or Previous.
@@ -119,7 +125,7 @@ public class Playlist {
 	// zero corresponds to the first node
 	public void add(String title, double length, int index) {
 		if (index < 0 || index > size) { // won't add negative or larger than playlist
-			throw new IndexOutOfBoundsException("Index either negative or larger than size of playlist");
+			throw new RuntimeException("Index either negative or larger than size of playlist");
 		} else if (index == size) { // adds to the end of list
 			this.addLast(title, length);
 		} else if (index == 0) { // ads to beginning of list
@@ -170,13 +176,15 @@ public class Playlist {
 		int count = 0;
 		
 		if (head == null) {
-			throw new IndexOutOfBoundsException("playlist empty cannot delete");
+			throw new RuntimeException("playlist empty cannot delete");
 		} else {
-			while (current.next != null && current.getTitle() != title) { // traverse until you get to episode
+			while (current.next != null && current.getTitle() != title && count != size) { // traverse until you get to episode
 				current = current.next;
 				count++;
 			}
-			
+			if (count == size) {
+				throw new RuntimeException("title: " + title + " not found in playlist.");
+			}
 			if (count == 0) {
 				return this.deleteFirst();
 			} else if (count == size-1) {
@@ -202,9 +210,9 @@ public class Playlist {
 		int count = 1;
 		
 		if (this.size == 0) {
-			throw new IndexOutOfBoundsException("Empty playlist");
+			throw new RuntimeException("Empty playlist");
 		} else if (m < 0) {
-			throw new IndexOutOfBoundsException("Cannot reach index: " + m);
+			throw new RuntimeException("Cannot reach index: " + m);
 		}
 		else {
 			while (this.size != 1) {
