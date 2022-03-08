@@ -68,9 +68,9 @@ public class Playlist {
 	 * -> (HowIBuiltThis|10.0MIN) -> (PlanetMoney|26.0MIN) [BEGIN]
 	 */
 	public String displayPlaylistBackward() {
-		String output = "[BEGIN] ";
+		String output = "[END] ";
 		if (this.isEmpty()) { // check if empty playlist, return nothing
-			return output += " [END]\n";
+			return output += " [BEGIN]\n";
 		}
 		else {
 			Episode last = head.prev; // make a note of where you started searching
@@ -80,7 +80,7 @@ public class Playlist {
 				output += current + " -> "; // add the current episode to the output
 				current = current.prev; // new current
 			}
-			output += current + " [END]\n";
+			output += current + " [BEGIN]\n";
 
 			return output;
 		}
@@ -125,10 +125,11 @@ public class Playlist {
 	// zero corresponds to the first node
 	public void add(String title, double length, int index) {
 		if (index < 0 || index > size) { // won't add negative or larger than playlist
-			throw new RuntimeException("Index either negative or larger than size of playlist");
+			if (index < 0) throw new RuntimeException("Index " + index + " is a negative number");
+			if (index > size) throw new RuntimeException("Index " + index + " is larger than playlist size " + this.size);
 		} else if (index == size) { // adds to the end of list
 			this.addLast(title, length);
-		} else if (index == 0) { // ads to beginning of list
+		} else if (index == 0) { // adds to beginning of list
 			this.addFirst(title, length);
 		} else {
 			Episode current = head; // scannner
@@ -145,28 +146,55 @@ public class Playlist {
 
 	// Delete the first Episode in the Playlist
 	public Episode deleteFirst() {
-		Episode second = head.next;
-		Episode last = head.prev;
+		if (this.size == 0) {
+			throw new RuntimeException("Cannot delete first episode from empty playlist");
+		}
+		else if (this.size == 1) {
+			Episode output = head;
+			head.next = null;
+			head.prev = null;
+			head = null;
+			this.size--;
+			return output;
+		} else {
 		
-		second.prev = last;
-		last.next = second;
-		
-		head = second;
-		this.size--;
-		return head;
+			Episode second = head.next;
+			Episode last = head.prev;
+			
+			second.prev = last;
+			last.next = second;
+			Episode oldHead = head;
+			head = second;
+			
+			this.size--;
+			return oldHead;
+		}
 	}
 
 	// Delete the last Episode in the Playlist
 	// (There is no special "last" variable in this Playlist;
 	// think of alternative ways to find that last Episode)
 	public Episode deleteLast() {
-		Episode newLast = head.prev.prev;
-		Episode currentLast = head.prev;
+		if (this.size == 0) {
+			throw new RuntimeException("Cannot delete last episode from empty playlist");
+		}
+		else if (this.size == 1) { // one thing in playlist
+			Episode output = head;
+			head.next = null;
+			head.prev = null;
+			head = null;
+			this.size--;
+			return output; 
+		} else { // normal playlist
 		
-		newLast.next = head;
-		head.prev = newLast;
-		this.size--;
-		return currentLast; // returns what was deleted
+			Episode newLast = head.prev.prev;
+			Episode currentLast = head.prev;
+			
+			newLast.next = head;
+			head.prev = newLast;
+			this.size--;
+			return currentLast; // returns what was deleted
+		}
 	}
 
 	// Remove (delete) the Episode that has the given "title"
@@ -175,21 +203,21 @@ public class Playlist {
 		Episode current = head;
 		int count = 0;
 		
-		if (head == null) {
-			throw new RuntimeException("playlist empty cannot delete");
-		} else {
+		if (head == null) { // empty
+			throw new RuntimeException("Cannot delete episode from empty playlist");
+		} else { // non empty
 			while (current.next != null && current.getTitle() != title && count != size) { // traverse until you get to episode
 				current = current.next;
 				count++;
 			}
-			if (count == size) {
-				throw new RuntimeException("title: " + title + " not found in playlist.");
+			if (count == size) { // cannot find episode in playlist
+				throw new RuntimeException("title: <" + title + "> not found in playlist.");
 			}
-			if (count == 0) {
+			if (count == 0) { // remove first episode
 				return this.deleteFirst();
-			} else if (count == size-1) {
+			} else if (count == size-1) { // remove last episode
 				return this.deleteLast();
-			} else {
+			} else { // remove everything in between
 				Episode before = current.prev;
 				Episode after = current.next;
 				
@@ -209,12 +237,13 @@ public class Playlist {
 		Episode current = head;
 		int count = 1;
 		
-		if (this.size == 0) {
-			throw new RuntimeException("Empty playlist");
-		} else if (m < 0) {
-			throw new RuntimeException("Cannot reach index: " + m);
-		}
-		else {
+		if (this.size == 0 || m <= 0 || m > size) {
+			if (this.size == 0) throw new RuntimeException("Empty playlist");
+			if (m <= 0) throw new RuntimeException("Cannot reach, index " + m + " too small for playlist size: " + this.size);
+			if (m > size) throw new RuntimeException("Cannot reach, index " + m + " too large for playlist size: " + this.size);
+		} else if (this.size == 1) { // 1 element playlist, remove first element
+			this.deleteFirst();
+		} else {
 			while (this.size != 1) {
 				
 				if (count % m == 0) { // removal! if our count is divisible by our m
@@ -228,9 +257,10 @@ public class Playlist {
 				count++;
 				
 			}
-		
+			this.head = current;
 		}
 		return current;
 	}
+
 
 } // End of Playlist class
