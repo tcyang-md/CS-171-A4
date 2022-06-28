@@ -1,4 +1,4 @@
-# CS-171-A4: Playlist Application
+# Playlist Application
 I created a playlist application in **Java** that supports adding, deleting, and navigating through different podcast episodes. In order to make navigating through the playlist flexible, it made the most sense to use a **circular doubly linked list.** Through this assignment I was able to deepen my understanding of linked lists and apply the knowledge that I had learned in class.
 
 ## Classes
