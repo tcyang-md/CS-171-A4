@@ -7,6 +7,9 @@ I created a playlist application in **Java** that supports adding, deleting, and
 - ITunes: This represents the application where you can test the functionality of the playlist and look at the episode.
 
 ## Usage
+### Instructions
+Download all files, ITunes.java is where you add episodes, create the playlist, and use all the functions listed below.
+### Available Functions
 ```java
 public class Playlist {
   public String displayPlaylistForward()
